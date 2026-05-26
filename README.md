@@ -118,4 +118,12 @@ Pastikan **Settings → Pages → Source** di repo GitHub diatur ke **"GitHub Ac
 
 ---
 
+---
+
+## Kredit
+
+Proyek ini mengacu pada **[atiohaidar/s2if](https://github.com/atiohaidar/s2if)** — digital notebook untuk mahasiswa S2 IF yang dibangun dengan SvelteKit. Konsep dan fitur-fiturnya (InlineAnnotator, VideoSync, Quiz, struktur kurikulum) dijadikan acuan dan diimplementasikan ulang dalam Astro.
+
+---
+
 **Prodi S1 Teknik Komputer — Fakultas Teknik Elektro — Universitas Telkom**
