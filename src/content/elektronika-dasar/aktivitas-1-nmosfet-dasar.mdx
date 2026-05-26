@@ -1,0 +1,68 @@
+---
+title: "Aktivitas 1: Pembentukan Saluran dan Mode Operasi MOSFET-n"
+summary: "Eksplorasi langsung pembentukan saluran konduksi NMOS dan batas antara mode triode dan saturasi menggunakan simulasi interaktif."
+subject: elektronika-dasar
+courseCode: TKI2H4
+semester: 3
+week: 8
+order: 1
+type: aktivitas
+renderMode: standard
+tags: [mosfet, nmos, threshold-voltage, triode, saturation, channel-formation]
+prereq: []
+estimatedMinutes: 30
+learningObjectives:
+  - Mengidentifikasi tegangan batas V_t dari kurva simulasi
+  - Membedakan perilaku MOSFET di mode triode dan saturasi
+  - Menghubungkan pembentukan saluran dengan persamaan I_D
+---
+
+import CircuitSim from '../../components/CircuitSim.svelte';
+import Callout from '../../components/Callout.astro';
+
+<Callout variant="info" title="🎯 Skenario Nyata">
+
+Bayangkan Anda sedang men-*debug* sebuah rangkaian *gate driver* untuk MOSFET daya pada papan kontrol motor BLDC drone Anda. Drone tidak terbang, motor tidak berputar. Anda mengukur dengan multimeter: tegangan gerbang MOSFET hanya 2 V, sedangkan datasheet MOSFET tersebut menyatakan V_GS(th) = 3,5 V.
+
+**Masalah ketemu.** MOSFET tidak pernah benar-benar *on* karena V_GS belum melampaui tegangan batasnya. Aktivitas ini akan memberi Anda intuisi langsung tentang apa yang sebenarnya terjadi pada level transistor saat V_GS naik dan melewati V_t — pengetahuan yang akan menyelamatkan Anda berjam-jam *debugging* di proyek nyata.
+
+</Callout>
+
+<CircuitSim
+  client:visible
+  url="https://www.falstad.com/circuit/circuitjs.html?startCircuit=nmosfet.txt"
+  title="Simulasi n-MOSFET — Tegangan Batas dan Mode Operasi"
+  caption="Geser slider V_GS dan V_DS. Amati kapan arus mulai mengalir dan kapan kurva mendatar."
+/>
+
+## Aktivitas Eksplorasi
+
+1. **Amati kondisi awal.** Berapa nilai V_GS dan V_DS saat ini? Apakah ada arus yang mengalir? Hitung dot arus yang berkedip pada kawat.
+
+2. **Cari tegangan batas V_t.** Geser *slider* V_GS perlahan dari 0 V ke atas. Pada nilai berapa arus mulai mengalir? Catat nilai ini — inilah V_t dari MOSFET dalam simulasi.
+
+3. **Eksplorasi mode triode.** Atur V_GS = 3 V. Geser V_DS dari 0 V ke atas secara perlahan. Pada V_DS kecil (misal 0,5 V), perhatikan bahwa I_D bertambah hampir linier seiring V_DS. MOSFET di mode triode berperilaku seperti **resistor yang dikontrol tegangan** — properti yang dimanfaatkan dalam *analog switch* dan *variable gain amplifier*.
+
+4. **Eksplorasi mode saturasi.** Lanjutkan menaikkan V_DS hingga 5 V. Amati bahwa pada satu titik, I_D **berhenti bertambah** meskipun V_DS terus dinaikkan. Inilah batas antara mode triode dan saturasi — dan inilah mode yang dipakai untuk penguatan sinyal.
+
+5. **Ulangi dengan V_GS berbeda.** Ubah V_GS menjadi 2 V, lalu 4 V, dan amati bagaimana titik batas triode/saturasi bergeser.
+
+<Callout variant="catatan" title="💭 Pertanyaan Refleksi">
+
+- Pada V_GS = 3 V dan V_t = 1,5 V, berapa nilai V_DS yang menjadi batas antara mode triode dan saturasi? Bandingkan dengan hasil pengamatan Anda di langkah 4.
+- Mengapa MOSFET yang dipakai sebagai *switch* digital (misal di gerbang logika CMOS) sengaja dirancang agar beroperasi di mode triode saat *on*?
+- Mengapa MOSFET yang dipakai sebagai penguat analog (audio, RF) justru harus dijaga di mode saturasi?
+
+</Callout>
+
+## Kaitan dengan Teori
+
+Batas antara mode triode dan saturasi terjadi pada $V_{DS} = V_{GS} - V_t$, yaitu pada **tegangan overdrive $V_{OV}$**. Di mode triode, arus mengikuti:
+
+$$I_D = k_n (V_{GS} - V_t) V_{DS} - \tfrac{1}{2} k_n V_{DS}^2$$
+
+Di mode saturasi, arus menjadi konstan terhadap $V_{DS}$:
+
+$$I_D = \tfrac{1}{2} k_n (V_{GS} - V_t)^2$$
+
+Pengamatan Anda di langkah 4 adalah visualisasi langsung dari fenomena saturasi arus ini — mekanisme fisik yang memungkinkan penguatan sinyal di seluruh dunia elektronik analog.

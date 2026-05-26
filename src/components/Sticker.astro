@@ -1,0 +1,27 @@
+---
+interface Props {
+  variant?: 'type' | 'week' | 'lab';
+  rotate?: number;
+}
+const { variant = 'type', rotate = -3 } = Astro.props;
+---
+<span class={`sticker sticker-${variant}`} style={`--rotate: ${rotate}deg`}>
+  <slot />
+</span>
+
+<style>
+  .sticker {
+    display: inline-block;
+    font-family: var(--font-hand);
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 0.3rem 0.8rem;
+    border-radius: 3px;
+    transform: rotate(var(--rotate));
+    box-shadow: 1px 2px 4px rgba(0,0,0,0.15);
+    user-select: none;
+  }
+  .sticker-type { background: #fff8b0; color: #5a4a00; border: 1px solid #e8d84c; }
+  .sticker-week { background: #d0e8ff; color: #1e3a5f; border: 1px solid #90bce8; }
+  .sticker-lab  { background: #d8f5d8; color: #2f7d4e; border: 1px solid #80cc80; }
+</style>

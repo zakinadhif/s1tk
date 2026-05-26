@@ -1,0 +1,85 @@
+---
+title: "Aktivitas 6: Penguat Common-Gate — Mengapa 5G Anda Bisa Bekerja di Gigahertz"
+summary: "Pelajari konfigurasi common-gate sebagai LNA RF: impedansi masukan rendah, tanpa efek Miller, keluaran sefasa — properti unik yang mengungguli CS di frekuensi tinggi."
+subject: elektronika-dasar
+courseCode: TKI2H4
+semester: 3
+week: 11
+order: 6
+type: aktivitas
+renderMode: standard
+tags: [common-gate, lna, rf-amplifier, miller-effect, input-impedance, 5g, cascode]
+prereq: ['aktivitas-4-common-source']
+estimatedMinutes: 35
+learningObjectives:
+  - Membandingkan fasa keluaran CG vs CS dan menjelaskan penyebabnya
+  - Menganalisis mengapa impedansi masukan rendah CG cocok untuk antena 50 Ω
+  - Melengkapi tabel perbandingan tiga konfigurasi penguat FET
+---
+
+import CircuitSim from '../../components/CircuitSim.svelte';
+import Callout from '../../components/Callout.astro';
+
+<Callout variant="info" title="🎯 Skenario Nyata">
+
+Modem 5G di ponsel Anda bekerja pada frekuensi 3,5 GHz — sinyalnya tiba dari antena dengan amplitudo dalam orde mikrovolt. Tahap pertama penguat yang menanganinya disebut **LNA (Low-Noise Amplifier)**, dan di hampir semua *receiver* RF modern, LNA dibangun dengan konfigurasi **common-gate** atau **cascode** (CS + CG ditumpuk).
+
+Mengapa CG? Karena CG memiliki tiga properti unik yang membuatnya unggul di frekuensi tinggi:
+1. **Impedansi masukan rendah** (≈ $1/g_m$, biasanya 50 Ω) — **cocok langsung dengan impedansi antena**.
+2. **Tidak ada efek Miller** (perkalian kapasitansi parasitik) — sehingga responsnya tetap baik hingga puluhan GHz.
+3. **Keluaran sefasa** dengan masukan — memudahkan analisis dan desain *matching network*.
+
+</Callout>
+
+<CircuitSim
+  client:visible
+  url="https://www.falstad.com/circuit/circuitjs.html?cct=PENDING"
+  title="Simulasi Penguat Common-Gate — LNA RF"
+  caption="Bandingkan fasa keluaran dengan CS Aktivitas 4. Uji impedansi masukan rendah dengan R_sig besar."
+  pending={true}
+/>
+
+## Aktivitas Eksplorasi
+
+1. **Bandingkan fasa dengan CS.** Buka simulasi CS (Aktivitas 4) di satu tab, dan CG di tab lain. Amati bahwa pada CG, sinyal keluaran **tidak berbalik fasa** dari masukan. Inilah perbedaan paling mencolok antara CS dan CG.
+
+2. **Ukur penguatan.** Estimasi $|A_v|$ dari oscilloscope. Bandingkan dengan penguatan CS pada $R_D$ yang sama — seharusnya hampir sama besarnya.
+
+3. **Uji impedansi masukan rendah.** Tambahkan resistor sumber sinyal $R_{sig}$ besar (misal 100 kΩ) di antara sumber sinyal dan kaki *source* MOSFET. Amati bahwa sinyal yang sampai ke MOSFET **turun drastis** — bukti impedansi masukan rendah.
+
+4. **Bandingkan dengan CS.** Pada CS, $R_{sig}$ 100 kΩ hampir tidak menurunkan sinyal karena impedansi masukan CS sangat tinggi. CG kebalikannya — impedansi rendah membuatnya cocok untuk antena 50 Ω, bukan untuk sumber sinyal generik.
+
+<Callout variant="catatan" title="💭 Pertanyaan Refleksi">
+
+- Tuliskan dalam tabel ringkas: untuk masing-masing dari CS, CD, dan CG, sebutkan (a) lokasi masukan/keluaran, (b) fasa keluaran, (c) penguatan tegangan, (d) impedansi masukan, (e) impedansi keluaran, (f) aplikasi tipikal.
+- Mengapa LNA 5G hampir selalu menggunakan topologi *cascode* (CS + CG bertumpuk), bukan CS saja? Apa kontribusi unik CG di sini?
+- Bayangkan Anda merancang *front-end* receiver Wi-Fi 6 (5,8 GHz) untuk papan IoT. Mengapa Anda **tidak akan** memilih konfigurasi CS untuk tahap pertama setelah antena?
+
+</Callout>
+
+## Kaitan dengan Teori
+
+Penguatan dan impedansi CG:
+
+$$A_v = +g_m R_D \quad \text{(perhatikan tanda positif — keluaran sefasa!)}$$
+$$R_{in} = \frac{1}{g_m}$$
+
+Tanda positif pada $A_v$ inilah yang menyebabkan keluaran sefasa dengan masukan — kontras dengan CS yang bertanda negatif. Inilah trik elegan elektronika analog: konfigurasi yang sama (MOSFET tunggal) menghasilkan **tiga karakteristik berbeda** hanya dengan mengubah kaki mana yang menjadi masukan dan keluaran.
+
+---
+
+## Sintesis: Tabel Perbandingan Tiga Konfigurasi
+
+Setelah menyelesaikan semua aktivitas, lengkapi tabel berikut:
+
+| Karakteristik | Common-Source (CS) | Common-Drain (CD) | Common-Gate (CG) |
+|---|---|---|---|
+| Masukan di kaki | Gate | Gate | Source |
+| Keluaran di kaki | Drain | Source | Drain |
+| Fasa keluaran | Terbalik (180°) | Sama | Sama |
+| Penguatan tegangan \|A_v\| | $g_m R_D$ (tinggi) | ≈ 1 | $g_m R_D$ (tinggi) |
+| Impedansi masukan $R_{in}$ | Sangat tinggi (MΩ) | Sangat tinggi (MΩ) | Rendah (≈ $1/g_m$) |
+| Impedansi keluaran $R_{out}$ | Tinggi ($R_D$) | Rendah (≈ $1/g_m$) | Tinggi ($R_D$) |
+| Aplikasi tipikal | Penguat sinyal umum, mikrofon | Buffer/penyangga, driver headphone | LNA RF, cascode |
+
+**Mengapa harus ada tiga konfigurasi?** Karena tidak ada satu pun yang sempurna untuk semua tugas. Insinyur analog yang baik bukan yang menghafal satu konfigurasi "terbaik", melainkan yang tahu **kapan memakai yang mana** dan **bagaimana menggabungkannya**.

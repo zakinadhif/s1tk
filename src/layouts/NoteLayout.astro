@@ -1,0 +1,140 @@
+---
+import { getCollection, render } from 'astro:content';
+import NoteHeader from '../components/NoteHeader.astro';
+import InlineAnnotator from '../components/InlineAnnotator.svelte';
+import VideoSidebar from '../components/VideoSidebar.svelte';
+import VideoSyncArticle from '../components/VideoSyncArticle.svelte';
+import '../styles/global.css';
+
+interface Props {
+  frontmatter: Record<string, unknown>;
+  headings?: Array<{ depth: number; slug: string; text: string }>;
+}
+const { frontmatter, headings = [] } = Astro.props;
+
+const isVideoSync = frontmatter.renderMode === 'video-sync';
+
+// Build nav tree from all topics
+const allTopics = await getCollection('topics');
+const bySubject = allTopics.reduce<Record<string, typeof allTopics>>((acc, t) => {
+  const subj = t.data.subject as string;
+  if (!acc[subj]) acc[subj] = [];
+  acc[subj].push(t);
+  return acc;
+}, {});
+Object.values(bySubject).forEach(arr => arr.sort((a, b) => (a.data.order as number) - (b.data.order as number)));
+
+const currentPath = Astro.url.pathname;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.17.0/dist/katex.min.css" />
+    <title>{frontmatter.title as string} — S1TK Notebook</title>
+    <meta name="description" content={frontmatter.summary as string} />
+  </head>
+  <body>
+    <div class={`app-shell${isVideoSync ? ' video-sync-mode' : ''}`}>
+      <header class="site-header">
+        <a href={`${base}/`}>S1TK Notebook</a>
+        <span style="opacity:0.5; font-size:0.85rem;">Prodi S1 Teknik Komputer — Universitas Telkom</span>
+        <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation">☰ Menu</button>
+      </header>
+
+      <nav class="site-nav" id="site-nav" aria-label="Navigasi mata kuliah">
+        {Object.entries(bySubject).map(([subject, topics]) => (
+          <div>
+            <p class="nav-subject-title">
+              <a href={`${base}/${subject}`}>{subject.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}</a>
+            </p>
+            <ul class="nav-list">
+              {topics.map(t => {
+                const slug = t.id.split('/').at(-1);
+                const href = `${base}/${subject}/${slug}`;
+                return (
+                  <li>
+                    <a href={href} aria-current={currentPath === href ? 'page' : undefined}>
+                      {t.data.title as string}
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        ))}
+      </nav>
+
+      <main class="note-article-wrap">
+        <article class="note-article">
+          <NoteHeader frontmatter={frontmatter as any} />
+          {isVideoSync ? (
+            <VideoSyncArticle
+              client:load
+              sectionMap={(frontmatter.videoSectionMap as any) ?? []}
+            >
+              <slot />
+            </VideoSyncArticle>
+          ) : (
+            <div class="note-body">
+              <slot />
+            </div>
+          )}
+        </article>
+      </main>
+
+      {isVideoSync ? (
+        <aside class="video-sidebar-wrap">
+          <VideoSidebar
+            client:load
+            videoId={frontmatter.videoId as string}
+          />
+        </aside>
+      ) : (
+        <aside class="toc-sidebar" aria-label="Daftar isi">
+          {headings.length > 0 && (
+            <div>
+              <p class="toc-title">Daftar Isi</p>
+              <ul class="toc-list">
+                {headings.filter(h => h.depth <= 3).map(h => (
+                  <li class={`depth-${h.depth}`}>
+                    <a href={`#${h.slug}`}>{h.text}</a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </aside>
+      )}
+    </div>
+
+    <InlineAnnotator client:load />
+
+    <script>
+      const toggle = document.getElementById('nav-toggle');
+      const nav = document.getElementById('site-nav');
+      toggle?.addEventListener('click', () => {
+        nav?.classList.toggle('open');
+      });
+    </script>
+  </body>
+</html>
+
+<style>
+  .note-body { line-height: 1.75; }
+  .note-body h2 { font-size: 1.3rem; margin-top: 2rem; color: var(--color-binder); border-bottom: 1px solid var(--color-grid); padding-bottom: 0.3rem; }
+  .note-body h3 { font-size: 1.1rem; margin-top: 1.5rem; }
+  .note-body p  { margin: 0.75rem 0; }
+  .note-body ul, .note-body ol { padding-left: 1.5rem; }
+  .note-body li { margin-bottom: 0.3rem; }
+  .note-body table { border-collapse: collapse; width: 100%; font-size: 0.9rem; margin: 1rem 0; }
+  .note-body th, .note-body td { border: 1px solid var(--color-grid); padding: 0.5rem 0.75rem; text-align: left; }
+  .note-body th { background: var(--color-binder); color: #fff; }
+  .note-body tr:nth-child(even) td { background: hsl(215 30% 97%); }
+</style>

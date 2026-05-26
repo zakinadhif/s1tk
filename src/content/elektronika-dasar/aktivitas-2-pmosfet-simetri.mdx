@@ -1,0 +1,54 @@
+---
+title: "Aktivitas 2: Simetri MOSFET-p dan Mengapa Smartphone Anda Tidak Meleleh"
+summary: "Pelajari cara kerja PMOS sebagai komplemen NMOS dan bagaimana teknologi CMOS meminimalkan konsumsi daya statis pada miliaran transistor."
+subject: elektronika-dasar
+courseCode: TKI2H4
+semester: 3
+week: 8
+order: 2
+type: aktivitas
+renderMode: standard
+tags: [mosfet, pmos, cmos, complementary, power-consumption, digital-logic]
+prereq: ['aktivitas-1-nmosfet-dasar']
+estimatedMinutes: 25
+learningObjectives:
+  - Menjelaskan perbedaan polaritas V_GS untuk PMOS vs NMOS
+  - Menganalisis mengapa CMOS mengonsumsi daya statis mendekati nol
+  - Membandingkan mobilitas pembawa muatan elektron dan hole
+---
+
+import CircuitSim from '../../components/CircuitSim.svelte';
+import Callout from '../../components/Callout.astro';
+
+<Callout variant="info" title="🎯 Skenario Nyata">
+
+Ponsel pintar Anda berisi sekitar 15 miliar transistor, namun saat *idle*, ia mengonsumsi hanya beberapa miliwatt — tidak meleleh, tidak meledak. Bagaimana bisa?
+
+Jawabannya: **teknologi CMOS** — *Complementary* MOS — yang memasangkan MOSFET-n dengan MOSFET-p sehingga **hanya salah satu yang aktif pada satu waktu**. Saat output gerbang logika dalam keadaan stabil (tidak sedang berganti), arus statis yang mengalir mendekati nol.
+
+PMOS adalah pasangan komplementer dari NMOS yang Anda pelajari di Aktivitas 1. Tanpa PMOS, prosesor laptop Anda akan butuh pendingin seukuran AC ruangan.
+
+</Callout>
+
+<CircuitSim
+  client:visible
+  url="https://www.falstad.com/circuit/circuitjs.html?startCircuit=pmosfet.txt"
+  title="Simulasi p-MOSFET — Polaritas Komplementer"
+  caption="Perhatikan arah V_GS dan arah aliran arus yang berlawanan dengan NMOS."
+/>
+
+## Aktivitas Eksplorasi
+
+1. Amati bahwa pada simulasi, sumber (*source*) PMOS sekarang terhubung ke tegangan positif, dan *drain* di sisi lebih rendah.
+
+2. Geser V_GS ke arah **lebih negatif** (turun dari 0 V). Pada nilai berapa arus mulai mengalir?
+
+3. Bandingkan arah aliran arus dengan kasus NMOS pada Aktivitas 1. Apakah arah arus pada saluran (dari S ke D atau sebaliknya) berlawanan?
+
+<Callout variant="catatan" title="💭 Pertanyaan Refleksi">
+
+- Mengapa PMOS membutuhkan V_GS yang **lebih negatif** untuk *turn-on*? (Petunjuk: pikirkan jenis pembawa muatan yang membentuk saluran.)
+- Dalam gerbang inverter CMOS (sebuah NOT gate), input dihubungkan ke *gate* NMOS **dan** PMOS sekaligus. Ketika input HIGH, manakah yang *on*? Ketika input LOW, manakah yang *on*? Mengapa konfigurasi ini membuat konsumsi daya statis mendekati nol?
+- Para perancang *chip* sering mengeluh bahwa PMOS "lebih lambat" daripada NMOS dengan ukuran sama. Konsekuensinya, dalam tata letak nyata, PMOS dibuat 2–3× lebih besar. Mengapa demikian? (Petunjuk: mobilitas elektron vs *holes*.)
+
+</Callout>

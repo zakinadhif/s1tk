@@ -1,0 +1,69 @@
+---
+title: "Aktivitas 4: Penguat Common-Source — Inti dari Setiap Mikrofon dan Pemancar Radio"
+summary: "Amati penguatan tegangan, pembalikan fasa, dan fenomena clipping pada konfigurasi CS menggunakan osiloskop dua kanal dalam simulasi."
+subject: elektronika-dasar
+courseCode: TKI2H4
+semester: 3
+week: 10
+order: 4
+type: aktivitas
+renderMode: standard
+tags: [common-source, amplifier, voltage-gain, phase-inversion, clipping, signal-distortion]
+prereq: ['aktivitas-3-bias-q-point']
+estimatedMinutes: 35
+learningObjectives:
+  - Mengukur penguatan tegangan |A_v| dari osiloskop simulasi
+  - Menjelaskan asal-usul pembalikan fasa 180° pada penguat CS
+  - Mengidentifikasi kondisi clipping dan hubungannya dengan distorsi audio
+---
+
+import CircuitSim from '../../components/CircuitSim.svelte';
+import Callout from '../../components/Callout.astro';
+
+<Callout variant="info" title="🎯 Skenario Nyata">
+
+Saat Anda berbicara di mikrofon *condenser* — baik di *headset* gaming, *podcast setup*, atau bahkan mikrofon ponsel Anda — sinyal listrik yang keluar dari kapsul mikrofon hanya **beberapa milivolt**. Itu terlalu kecil untuk diproses oleh ADC atau dikirim ke speaker. Yang menyelamatkannya adalah **penguat *common-source*** yang menempel langsung di kapsul mikrofon, mengangkat sinyal puluhan kali lipat dalam mikrodetik pertama sebelum gangguan masuk.
+
+Konfigurasi yang sama ini juga ditemukan di:
+- **Tahap pertama setiap penerima radio** (radio FM, Wi-Fi, Bluetooth, 5G)
+- **Driver LED dengan modulasi PWM** untuk komunikasi optik (Li-Fi)
+- **Penguat sensor *strain gauge*** pada *load cell* timbangan digital
+
+</Callout>
+
+<CircuitSim
+  client:visible
+  url="https://www.falstad.com/circuit/circuitjs.html?startCircuit=mosfetamp.txt"
+  title="Simulasi Penguat Common-Source — Dual-Channel Oscilloscope"
+  caption="Amati pembalikan fasa dan ukur penguatan A_v = V_out/V_in dari tampilan osiloskop."
+/>
+
+## Aktivitas Eksplorasi
+
+1. **Amati dual-channel oscilloscope.** Simulasi menampilkan dua jejak: sinyal masukan $v_{gs}$ dan sinyal keluaran $v_{ds}$. Perhatikan dua hal sekaligus:
+   - Sinyal keluaran **jauh lebih besar amplitudonya** (inilah penguatan).
+   - Sinyal keluaran **terbalik fasa** terhadap masukan (puncak masukan ↔ lembah keluaran).
+
+2. **Ukur penguatan.** Estimasi amplitudo puncak-ke-puncak masukan dan keluaran dari layar oscilloscope. Hitung penguatan $|A_v| = V_{out,pp} / V_{in,pp}$. Apakah hasilnya beberapa puluh kali lipat?
+
+3. **Naikkan amplitudo masukan secara bertahap.** Klik kanan pada sumber AC, ubah amplitudo dari 50 mV menjadi 200 mV, lalu 500 mV. Amati apa yang terjadi pada bentuk gelombang keluaran.
+
+4. **Amati pemotongan sinyal (*clipping*).** Pada amplitudo masukan besar, sinyal keluaran tidak lagi berbentuk sinus murni — puncaknya **terpotong**. **Ini adalah suara "distorsi" yang Anda dengar saat speaker disetel terlalu keras.** Suara tersebut secara harfiah adalah bentuk gelombang yang Anda lihat sekarang di layar.
+
+5. **Eksperimen dengan R_D.** Ubah nilai R_D. Apakah penguatan bertambah saat R_D dinaikkan? Mengapa?
+
+<Callout variant="catatan" title="💭 Pertanyaan Refleksi">
+
+- Saat Anda menekan tombol volume ponsel Anda terlalu tinggi dan musik mulai terdengar "pecah", apa yang sebenarnya terjadi di level transistor? (Petunjuk: lihat layar oscilloscope Anda di langkah 4.)
+- Mengapa sinyal keluaran terbalik fasa 180° dari masukan? Hubungkan dengan persamaan $v_{ds} = V_{DD} - i_d \times R_D$.
+- Pada perancang penguat audio profesional, ada istilah "*headroom*" — jarak antara sinyal kerja normal dan batas *clipping*. Mengapa *headroom* yang lebih besar memerlukan tegangan suplai $V_{DD}$ yang lebih tinggi, dan mengapa hal ini menjadi tantangan di perangkat *battery-powered*?
+
+</Callout>
+
+## Kaitan dengan Teori
+
+Penguatan sinyal kecil rangkaian CS:
+
+$$A_v = -g_m R_D, \quad g_m = k_n V_{OV} = \frac{2 I_D}{V_{OV}}$$
+
+Tanda minus inilah yang Anda saksikan langsung sebagai pembalikan fasa pada oscilloscope. Fenomena *clipping* adalah konsekuensi alami dari syarat sinyal kecil **dilanggar** — MOSFET tidak lagi beroperasi pada segmen linier dari kurva $v_{DS}$ vs $v_{GS}$.

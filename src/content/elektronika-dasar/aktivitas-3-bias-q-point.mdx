@@ -1,0 +1,65 @@
+---
+title: "Aktivitas 3: Titik Kerja (Q-point) — Mengapa Amplifier DIY Sering Terdengar Buruk"
+summary: "Pahami stabilitas pra-tegangan MOSFET dan mengapa resistor umpan balik diri (R_S) menyelamatkan kualitas suara amplifier Anda di kondisi nyata."
+subject: elektronika-dasar
+courseCode: TKI2H4
+semester: 3
+week: 9
+order: 3
+type: aktivitas
+renderMode: standard
+tags: [mosfet, biasing, q-point, voltage-divider, thermal-stability, amplifier]
+prereq: ['aktivitas-2-pmosfet-simetri']
+estimatedMinutes: 35
+learningObjectives:
+  - Menentukan titik kerja Q-point dari kurva I_D vs V_DS
+  - Menjelaskan mekanisme umpan balik diri resistor R_S
+  - Menganalisis pengaruh variasi suhu terhadap stabilitas titik kerja
+---
+
+import CircuitSim from '../../components/CircuitSim.svelte';
+import Callout from '../../components/Callout.astro';
+
+<Callout variant="info" title="🎯 Skenario Nyata">
+
+Anda merancang *headphone amplifier* DIY berbasis MOSFET untuk proyek akhir semester. Skematiknya sempurna di simulasi LTspice. Anda merakit di PCB, mencolokkan headphone... dan suaranya **buruk**: pelan di satu sisi, terdistorsi di sisi lain, atau diam total. Apa yang salah?
+
+**90% dari masalah seperti ini adalah pra-tegangan (biasing) yang tidak tepat.** MOSFET Anda mungkin terjebak di mode triode, atau bahkan *cutoff*, sehingga tidak bisa menguatkan sinyal AC dengan benar. Lebih parah lagi: titik kerja yang awalnya benar bisa "*drift*" karena suhu, variasi parameter MOSFET dari batch ke batch, atau bahkan kelembapan udara.
+
+</Callout>
+
+<CircuitSim
+  client:visible
+  url="https://www.falstad.com/circuit/circuitjs.html?cct=PENDING"
+  title="Simulasi Pra-tegangan MOSFET — Pembagi Tegangan + R_S"
+  caption="Amati bagaimana V_DS bergeser saat Anda mengubah nilai R_D, R_S, atau pembagi tegangan."
+  pending={true}
+/>
+
+## Aktivitas Eksplorasi
+
+1. **Catat titik kerja awal.** Buka simulasi dan catat nilai V_GS, V_DS, dan I_D yang ditampilkan voltmeter. Apakah MOSFET berada di mode saturasi? (Cek: apakah $V_{DS} > V_{GS} - V_t$?)
+
+2. **Pengaruh R_D.** Klik kanan pada R_D, ubah nilainya menjadi dua kali lipat (misal dari 4,7 kΩ menjadi 10 kΩ). Apa yang terjadi pada V_DS? Apakah MOSFET masih di mode saturasi?
+
+3. **Mendorong ke mode triode.** Terus naikkan R_D hingga V_DS turun di bawah $(V_{GS} - V_t)$. Inilah skenario di mana penguat audio Anda akan **terdengar terdistorsi parah** — MOSFET tidak lagi linier.
+
+4. **Pengaruh R_S (umpan balik diri).** Kembalikan R_D ke nilai semula. Ubah R_S menjadi dua kali lipat. Amati bahwa V_GS akan turun secara otomatis. Inilah trik insinyur untuk membuat titik kerja **stabil terhadap perubahan suhu** — komponen utama keandalan elektronik di lingkungan tropis Indonesia.
+
+5. **Pengaruh pembagi tegangan gerbang.** Ubah R_G1 atau R_G2 dan amati pergeseran tegangan gerbang V_G.
+
+<Callout variant="catatan" title="💭 Pertanyaan Refleksi">
+
+- Mengapa R_S disebut sebagai resistor **umpan balik diri**? Apa yang terjadi pada V_GS jika I_D tiba-tiba naik karena suhu meningkat dari 25 °C ke 50 °C (skenario nyata di dalam casing perangkat embedded)?
+- Bayangkan Anda mendesain *gain stage* sebuah penguat audio yang akan diproduksi 1000 unit. Variasi V_t antar-MOSFET dari batch yang sama bisa ±0,3 V. Mengapa rangkaian dengan R_S besar lebih "*production-friendly*" daripada rangkaian tanpa R_S?
+- Pada langkah 3, ketika MOSFET masuk mode triode, mengapa rangkaian penguat **tidak akan bekerja dengan baik** untuk sinyal AC?
+
+</Callout>
+
+## Kaitan dengan Teori
+
+Pada rangkaian pra-tegangan pembagi tegangan, persamaan utama yang harus dipenuhi adalah:
+
+$$V_{GS} = V_G - I_D R_S, \quad I_D = \tfrac{1}{2} k_n (V_{GS} - V_t)^2$$
+
+Kedua persamaan ini diselesaikan secara simultan untuk menemukan titik kerja. Simulasi ini memungkinkan Anda **melihat solusinya bergeser** ketika resistor berubah, tanpa harus menghitung ulang setiap kali — pengalaman yang persis mirip dengan apa yang Anda lakukan di *bench* lab nanti dengan trimpot di tangan.

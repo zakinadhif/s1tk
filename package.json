@@ -1,0 +1,31 @@
+{
+  "name": "s1tk",
+  "type": "module",
+  "version": "0.0.1",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "pnpm validate && astro build",
+    "preview": "astro preview",
+    "validate": "tsx scripts/validate-prereqs.ts",
+    "test": "node --import tsx --test tests/validate-prereqs.test.ts",
+    "sync": "astro sync",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "^5.0.6",
+    "@astrojs/svelte": "^8.1.2",
+    "astro": "^6.3.8",
+    "gray-matter": "^4.0.3",
+    "katex": "^0.17.0",
+    "rehype-katex": "^7.0.1",
+    "remark-math": "^6.0.0",
+    "svelte": "^5.55.9",
+    "typescript": "^6.0.3"
+  },
+  "devDependencies": {
+    "tsx": "^4.22.3"
+  }
+}

@@ -1,0 +1,72 @@
+---
+title: "Aktivitas 5: Source Follower — Mengapa Headphone Murah Bisa Bunyi Lewat Output Apa Saja"
+summary: "Eksplorasi konfigurasi common-drain sebagai buffer impedansi: penguatan tegangan ≈1 tetapi kemampuan mengemudikan beban rendah meningkat drastis."
+subject: elektronika-dasar
+courseCode: TKI2H4
+semester: 3
+week: 11
+order: 5
+type: aktivitas
+renderMode: standard
+tags: [source-follower, common-drain, buffer, impedance-matching, output-impedance, audio]
+prereq: ['aktivitas-4-common-source']
+estimatedMinutes: 30
+learningObjectives:
+  - Mengukur penguatan tegangan source follower (≈1) dan memverifikasi fasa yang sama
+  - Menjelaskan konsep penyesuaian impedansi (*impedance matching*)
+  - Membandingkan kemampuan mengemudikan beban antara CS dan source follower
+---
+
+import CircuitSim from '../../components/CircuitSim.svelte';
+import Callout from '../../components/Callout.astro';
+
+<Callout variant="info" title="🎯 Skenario Nyata">
+
+Anda mencolokkan headphone Sennheiser HD650 (impedansi 300 Ω) ke ponsel Anda — bunyinya lemah. Lalu Anda mencolokkan headphone *earbud* murahan (impedansi 16 Ω) ke ponsel yang sama — bunyinya keras. Mengapa?
+
+Jawabannya berkaitan dengan **impedansi keluaran** rangkaian penguat di dalam ponsel. Sinyal audio yang dihasilkan DAC ponsel sangat kecil dan dari sumber berimpedansi tinggi — jika langsung dihubungkan ke headphone, tegangan akan "jatuh" karena pembagian tegangan resistif. Solusinya: **source follower** sebagai penyangga di antara DAC dan jack headphone.
+
+Source follower adalah konfigurasi yang **tidak menguatkan tegangan** ($A_v \approx 1$), tetapi **menguatkan kemampuan menyuplai arus**. Anda akan menemukan konfigurasi ini di:
+- Tahap **output op-amp** (LM358, NE5532, dan ribuan IC lainnya)
+- Tahap **output DAC** ke jack audio (HP, smartphone, USB DAC)
+- **Sensor interface** seperti pH meter, *ECG amplifier* di alat medis
+- **Voltage regulator** linier (LDO) — transistor pass di dalamnya bekerja persis sebagai source follower
+
+</Callout>
+
+<CircuitSim
+  client:visible
+  url="https://www.falstad.com/circuit/circuitjs.html?startCircuit=mosfollower.txt"
+  title="Simulasi Source Follower — Buffer Impedansi"
+  caption="Bandingkan amplitudo masukan dan keluaran. Amati fasa yang sama dan uji dengan beban R_L kecil."
+/>
+
+## Aktivitas Eksplorasi
+
+1. Amati bahwa sinyal masukan diberikan ke kaki *gate*, dan sinyal keluaran diambil dari kaki *source* (bukan *drain*).
+
+2. Bandingkan amplitudo sinyal masukan dan keluaran pada oscilloscope. Apakah keduanya hampir sama besar? Apakah fasanya **sama** (tidak terbalik)?
+
+3. **Eksperimen impedansi keluaran rendah.** Tambahkan resistor beban $R_L$ kecil (misal 1 kΩ) di keluaran (sejajar dengan $R_S$ yang ada). Amati: sinyal keluaran **hampir tidak berubah** amplitudonya — ini bukti impedansi keluaran rendah. Bayangkan headphone berimpedansi 16 Ω yang dipasang di sini — source follower masih sanggup men-*drive*-nya.
+
+4. **Bandingkan dengan CS amp.** Kembali ke Aktivitas 4 (CS amp) dan bayangkan apa yang akan terjadi jika beban 1 kΩ yang sama dipasang di keluarannya. CS amp akan kehilangan sebagian besar amplitudo karena impedansi keluarannya ($R_D$) terlalu tinggi.
+
+<Callout variant="catatan" title="💭 Pertanyaan Refleksi">
+
+- Mengapa source follower disebut "follower"? Apa yang "diikuti" oleh keluaran?
+- Jika penguatan hanya ≈ 1, dalam hal apa source follower "menguatkan" sinyal? (Petunjuk: pikirkan **arus** dan **daya**, bukan tegangan.)
+- Mengapa hampir setiap op-amp komersial memiliki tahap *output* berupa source follower (atau emitter follower untuk BJT)? Apa yang akan terjadi pada op-amp tanpa tahap *output buffer*?
+
+</Callout>
+
+## Kaitan dengan Teori
+
+Penguatan source follower:
+
+$$A_v = \frac{g_m R_S}{1 + g_m R_S} \approx 1 \quad \text{untuk } g_m R_S \gg 1$$
+
+Impedansi keluarannya:
+
+$$R_{out} \approx \frac{1}{g_m}$$
+
+yang biasanya hanya puluhan hingga ratusan ohm — jauh lebih kecil dari $R_D$ pada penguat CS. Inilah mengapa source follower bisa men-*drive* beban berimpedansi rendah tanpa kehilangan amplitudo signifikan.

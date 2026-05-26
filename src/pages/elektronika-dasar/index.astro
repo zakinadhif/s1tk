@@ -1,0 +1,134 @@
+---
+import { getCollection } from 'astro:content';
+import '../../styles/global.css';
+
+const topics = await getCollection('topics', ({ data }) => data.subject === 'elektronika-dasar');
+topics.sort((a, b) => a.data.order - b.data.order);
+
+const subject = 'elektronika-dasar';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <title>Elektronika Dasar (TKI2H4) — S1TK Notebook</title>
+  </head>
+  <body>
+    <header class="site-header">
+      <a href={`${base}/`}>S1TK Notebook</a>
+      <span style="opacity:0.5; font-size:0.85rem;">/ Elektronika Dasar</span>
+    </header>
+
+    <main class="subject-main">
+      <div class="subject-hero">
+        <div class="subject-hero-meta">
+          <span class="course-badge">TKI2H4</span>
+          <span class="semester-badge">Semester 3</span>
+        </div>
+        <h1>Elektronika Dasar</h1>
+        <p class="subject-tagline">Prodi S1 Teknik Komputer — Fakultas Teknik Elektro — Universitas Telkom</p>
+      </div>
+
+      <section class="why-section">
+        <h2>🌐 Mengapa Modul Ini Penting bagi Anda?</h2>
+        <p>
+          Ambil ponsel Anda sekarang. Di dalam <em>chip</em> prosesornya, terdapat sekitar <strong>15–20 miliar transistor MOSFET</strong> yang masing-masing beroperasi persis seperti yang akan Anda eksplorasi di modul ini. Setiap kali Anda mengirim pesan WhatsApp, transistor-transistor itu menyala dan mati miliaran kali per detik.
+        </p>
+        <p>
+          Pertanyaannya: <strong>Anda mau jadi orang yang memakai <em>chip</em> itu, atau orang yang merancangnya?</strong>
+        </p>
+        <p>Sebagai mahasiswa Teknik Komputer, FET bukan sekadar topik kuliah yang perlu dilewati untuk lulus. FET adalah komponen dasar dari:</p>
+        <ul>
+          <li>🖥️ <strong>Setiap CPU, GPU, dan mikrokontroler</strong> yang akan Anda program — dari ESP32 di proyek IoT Anda hingga prosesor Apple M-series di MacBook.</li>
+          <li>📡 <strong>Setiap modem nirkabel</strong> — Wi-Fi 6, 5G, Bluetooth — bagian RF-nya dipenuhi penguat FET.</li>
+          <li>🔋 <strong>Sistem manajemen daya</strong> di setiap perangkat baterai — laptop, smartphone, drone, kendaraan listrik.</li>
+          <li>🎧 <strong>Antarmuka audio dan sensor</strong> — <em>amplifier</em> mikrofon, <em>driver</em> speaker, pembaca sensor IMU pada <em>wearable</em>.</li>
+          <li>🏭 <strong>Industri semikonduktor Indonesia yang sedang tumbuh</strong> — Batam dan KEK lain mulai menarik investasi <em>fab</em> dan <em>backend assembly</em>. Insinyur yang memahami FET pada level ini punya peluang karir yang langka di Indonesia.</li>
+        </ul>
+        <p>
+          Modul ini dirancang agar Anda mendapatkan intuisi itu, <strong>bukan dengan menghafal rumus</strong>, tetapi dengan <strong>memutar-mutar parameter dalam simulasi <em>real-time</em></strong> dan mengamati apa yang sebenarnya terjadi.
+        </p>
+      </section>
+
+      <section class="how-section">
+        <h2>Cara Menggunakan Modul Ini</h2>
+        <p>Setiap aktivitas terdiri dari empat bagian:</p>
+        <ol>
+          <li><strong>🎯 Skenario Nyata</strong> — kapan dan di mana konsep ini muncul di dunia kerja.</li>
+          <li><strong>🔬 Aktivitas Eksplorasi</strong> — langkah eksperimen dengan simulasi.</li>
+          <li><strong>💭 Pertanyaan Refleksi</strong> — untuk mengikat pemahaman.</li>
+          <li><strong>📐 Kaitan dengan Teori</strong> — rumus muncul <em>setelah</em> Anda mengamati fenomena.</li>
+        </ol>
+        <p>Susun urutan ini: <strong>pengamatan dulu, rumus belakangan</strong>. Itulah cara insinyur sungguhan belajar.</p>
+      </section>
+
+      <section class="topics-section">
+        <h2>Daftar Aktivitas</h2>
+        <ul class="topic-grid">
+          {topics.map(t => {
+            const slug = t.id.split('/').at(-1);
+            return (
+              <li class="topic-card">
+                <a href={`${base}/${subject}/${slug}`} class="topic-card-link">
+                  <div class="topic-card-header">
+                    <span class="topic-num">Aktivitas {t.data.order}</span>
+                    {t.data.week && <span class="topic-week">Pekan {t.data.week}</span>}
+                  </div>
+                  <h3 class="topic-card-title">{t.data.title}</h3>
+                  <p class="topic-card-summary">{t.data.summary}</p>
+                  {t.data.estimatedMinutes && (
+                    <span class="topic-card-time">⏱ {t.data.estimatedMinutes} menit</span>
+                  )}
+                </a>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+    </main>
+  </body>
+</html>
+
+<style>
+  .site-header {
+    background: var(--color-binder);
+    color: #fff;
+    padding: 0.75rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .site-header a { color: #fff; text-decoration: none; font-weight: 600; }
+
+  .subject-main { max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+  .subject-hero { margin-bottom: 2rem; }
+  .subject-hero-meta { display: flex; gap: 0.5rem; margin-bottom: 0.5rem; }
+  .course-badge { background: var(--color-binder); color: #fff; font-family: var(--font-mono); font-size: 0.78rem; padding: 0.2rem 0.6rem; border-radius: 999px; font-weight: 600; }
+  .semester-badge { background: var(--color-accent-soft); color: var(--color-accent); font-family: var(--font-mono); font-size: 0.78rem; padding: 0.2rem 0.6rem; border-radius: 999px; font-weight: 600; }
+  .subject-hero h1 { font-size: 2rem; font-weight: 700; color: var(--color-binder); margin: 0 0 0.25rem; }
+  .subject-tagline { color: var(--color-ink-muted); font-size: 0.9rem; margin: 0; }
+
+  .why-section, .how-section { background: var(--color-paper); border-radius: var(--radius); padding: 1.5rem 2rem; margin-bottom: 1.5rem; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .why-section h2, .how-section h2 { color: var(--color-binder); margin-top: 0; font-size: 1.2rem; }
+  .why-section ul, .how-section ol { padding-left: 1.5rem; }
+  .why-section li, .how-section li { margin-bottom: 0.4rem; line-height: 1.6; }
+
+  .topics-section h2 { font-size: 1.2rem; color: var(--color-binder); margin-bottom: 1rem; }
+  .topic-grid { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
+  .topic-card { background: var(--color-paper); border-radius: var(--radius); box-shadow: 0 1px 4px rgba(0,0,0,0.07); overflow: hidden; transition: box-shadow 0.15s; }
+  .topic-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.12); }
+  .topic-card-link { display: block; padding: 1.25rem; text-decoration: none; color: inherit; }
+  .topic-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+  .topic-num { font-family: var(--font-mono); font-size: 0.75rem; font-weight: 600; color: var(--color-accent); }
+  .topic-week { font-family: var(--font-mono); font-size: 0.72rem; color: var(--color-ink-muted); background: var(--color-grid); padding: 0.1rem 0.4rem; border-radius: 999px; }
+  .topic-card-title { font-size: 0.95rem; font-weight: 700; color: var(--color-ink); margin: 0 0 0.4rem; line-height: 1.35; }
+  .topic-card-summary { font-size: 0.8rem; color: var(--color-ink-muted); margin: 0 0 0.5rem; line-height: 1.5; }
+  .topic-card-time { font-size: 0.75rem; color: var(--color-ink-muted); font-family: var(--font-mono); }
+</style>

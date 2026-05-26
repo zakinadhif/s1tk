@@ -1,0 +1,85 @@
+---
+interface Props {
+  frontmatter: {
+    title: string;
+    courseCode: string;
+    week?: number;
+    estimatedMinutes?: number;
+    learningObjectives?: string[];
+    type: string;
+    tags?: string[];
+  };
+}
+const { frontmatter } = Astro.props;
+---
+<header class="note-header">
+  <div class="note-header-badges">
+    <span class="badge badge-course">{frontmatter.courseCode}</span>
+    {frontmatter.week && <span class="badge badge-week">Pekan {frontmatter.week}</span>}
+    <span class="badge badge-type">{frontmatter.type}</span>
+    {frontmatter.estimatedMinutes && (
+      <span class="badge badge-time">⏱ {frontmatter.estimatedMinutes} menit</span>
+    )}
+  </div>
+
+  <h1 class="note-title">{frontmatter.title}</h1>
+
+  {frontmatter.learningObjectives && frontmatter.learningObjectives.length > 0 && (
+    <div class="note-objectives">
+      <p class="objectives-label">Tujuan Pembelajaran</p>
+      <ul class="objectives-list">
+        {frontmatter.learningObjectives.map(obj => <li>{obj}</li>)}
+      </ul>
+    </div>
+  )}
+</header>
+
+<style>
+  .note-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid var(--color-grid);
+  }
+  .note-header-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 0.75rem;
+  }
+  .badge {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    font-family: var(--font-mono);
+  }
+  .badge-course  { background: var(--color-binder); color: #fff; }
+  .badge-week    { background: var(--color-accent-soft); color: var(--color-accent); }
+  .badge-type    { background: var(--color-grid); color: var(--color-ink-muted); text-transform: uppercase; }
+  .badge-time    { background: transparent; color: var(--color-ink-muted); border: 1px solid var(--color-grid); }
+
+  .note-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    line-height: 1.25;
+    margin: 0 0 1rem;
+    color: var(--color-ink);
+  }
+  .objectives-label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-ink-muted);
+    margin: 0 0 0.4rem;
+    font-family: var(--font-mono);
+  }
+  .objectives-list {
+    margin: 0;
+    padding-left: 1.25rem;
+    font-size: 0.9rem;
+    color: var(--color-ink-muted);
+  }
+  .objectives-list li { margin-bottom: 0.25rem; }
+</style>
